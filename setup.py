@@ -10,11 +10,11 @@ from cli import __version__, _program
 setup(name=_program,
       version=__version__,
       packages=['cli'],
-      description='Skeleton commandline python project',
-      url='https://github.com/danielecook/python-cli-skeleton',
+      description='Pimp videolibrary',
+      url='https://github.com/furester/pimp-my-videolibrary',
       author='YOUR NAME',
       author_email='youremail@email.com',
-      license='MIT',
+      license='Apache License Version 2.0',
       entry_points="""
       [console_scripts]
       {program} = cli.command:main

@@ -29,4 +29,3 @@ The setup script will install the program as `pimp`. You can invoke it using:
 and get the help with
 
     bin/pimp --help
-    
