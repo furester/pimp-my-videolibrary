@@ -2,6 +2,7 @@ import sys
 import argparse
 from . import _program
 from clint.textui import puts, indent, colored
+import pimp
 
 def main(args = sys.argv[1:]):
     parser = argparse.ArgumentParser(prog = _program)
@@ -38,6 +39,8 @@ def main(args = sys.argv[1:]):
                        action = "store_true")
 
     args = parser.parse_args(args)
+
+    pimp.retrieve.print_filelist("host", "username", "password")
 
     if args.square:
         print(args.square**2)

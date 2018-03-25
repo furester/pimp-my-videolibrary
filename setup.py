@@ -12,8 +12,8 @@ setup(name=_program,
       packages=['cli'],
       description='Pimp videolibrary',
       url='https://github.com/furester/pimp-my-videolibrary',
-      author='YOUR NAME',
-      author_email='youremail@email.com',
+      author='Igor Scabini',
+      author_email='furester@gmail.com',
       license='Apache License Version 2.0',
       entry_points="""
       [console_scripts]
