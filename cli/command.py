@@ -40,7 +40,7 @@ def main(args = sys.argv[1:]):
 
     args = parser.parse_args(args)
 
-    pimp.retrieve.print_filelist("host", "username", "password")
+    pimp.retrieve.print_filelist()
 
     if args.square:
         print(args.square**2)

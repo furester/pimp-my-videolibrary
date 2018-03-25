@@ -13,7 +13,7 @@ system’s site-packages.
 After cloning the project:
 
     cd pimp-my-videolibrary
-    virtualenv .
+    virtualenv --python=/usr/bin/python2.7 .
 
     source bin/activate
     bin/pip install -e .
