@@ -51,7 +51,6 @@ def main(args = sys.argv[1:]):
         except yaml.YAMLError as exc:
             print(exc)
 
-    # "/volume1/video/film/"
     l = pimp.retrieve.print_filelist(cfg['start_path'], cfg['extensions'])
     print(l)
 

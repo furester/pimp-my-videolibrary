@@ -29,3 +29,11 @@ The setup script will install the program as `pimp`. You can invoke it using:
 and get the help with
 
     bin/pimp --help
+
+`pimp` uses a YAML based configuration file. The following example will look in
+`/tmp` folder, will match any item that match extensions array:
+
+    start_path: /tmp/
+    extensions:
+      - .pdf
+      - .txt
