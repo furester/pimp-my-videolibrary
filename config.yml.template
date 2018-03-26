@@ -1,0 +1,5 @@
+---
+start_path: /tmp/
+extensions:
+  - .pdf
+  - .txt

@@ -16,9 +16,9 @@ After cloning the project:
     virtualenv --python=/usr/bin/python2.7 .
 
     source bin/activate
-    bin/pip install -e .
     bin/pip install -r requirements.txt
     python setup.py install
+    bin/pip install -e .
 
 ## Usage
 

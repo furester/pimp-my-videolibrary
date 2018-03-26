@@ -2,6 +2,7 @@ import sys
 import argparse
 from . import _program
 from clint.textui import puts, indent, colored
+import os, shutil, yaml
 import pimp
 
 def main(args = sys.argv[1:]):
@@ -40,7 +41,19 @@ def main(args = sys.argv[1:]):
 
     args = parser.parse_args(args)
 
-    pimp.retrieve.print_filelist()
+    if not os.path.isfile(".config.yml"):
+        print("configuration file needed, creating one from template")
+        shutil.copyfile("config.yml.template", ".config.yml")
+
+    with open(".config.yml", 'r') as ymlfile:
+        try:
+            cfg = yaml.load(ymlfile)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    # "/volume1/video/film/"
+    l = pimp.retrieve.print_filelist(cfg['start_path'], cfg['extensions'])
+    print(l)
 
     if args.square:
         print(args.square**2)
