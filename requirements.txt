@@ -1,3 +1,8 @@
 # Add required modules here.
 clint
 pyyaml
+hachoir_core
+hachoir_parser
+hachoir_metadata
+PyYAML
+numpy
