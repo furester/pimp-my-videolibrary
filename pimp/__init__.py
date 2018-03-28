@@ -1,2 +1,2 @@
-from . import retrieve
 from . import parser
+from . import retriever

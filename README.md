@@ -37,3 +37,14 @@ and get the help with
     extensions:
       - .pdf
       - .txt
+
+## Specification
+
+Matching files will be compared for
+
+- resolution
+- video codec
+- language
+- audio quality
+
+to find the _best_ one.

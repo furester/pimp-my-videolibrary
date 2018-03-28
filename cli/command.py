@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import shutil
 import sys
 import argparse
@@ -11,35 +13,17 @@ import pimp
 def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser(prog=_program)
 
-    parser.add_argument("--square",
-                        help="Used for testing",
-                        type=int,
-                        default=None)
-
-    parser.add_argument("--int_value",
-                        help="display a square of a given number",
-                        type=int)
-
-    parser.add_argument("--float_value",
-                        help="display a square of a given number",
-                        type=int)
-
-    parser.add_argument("-f",
-                        "--flag",
+    parser.add_argument("--cache",
                         help="Specify a flag",
                         action="store_true")
-    parser.add_argument("--rating",
-                        help="An option with a limited range of values",
-                        choices=[1, 2, 3],
-                        type=int)
 
-    # Allow --day and --night options, but not together.
+    # Allow --use-cache-retriver and --use-fresh-retriver options, but not together.
     group = parser.add_mutually_exclusive_group()
-    group.add_argument("--day",
-                       help="mutually exclusive option",
+    group.add_argument("--use_cache_retriver",
+                       help="Use cache for retriever component - if present",
                        action="store_true")
-    group.add_argument("--night",
-                       help="mutually exclusive option",
+    group.add_argument("--use_fresh_retriver",
+                       help="Don't use cache for retriever component",
                        action="store_true")
 
     args = parser.parse_args(args)
@@ -54,15 +38,19 @@ def main(args=sys.argv[1:]):
         except yaml.YAMLError as exc:
             print(exc)
 
-    l = pimp.retrieve.print_filelist(cfg['start_path'], cfg['extensions'])
-    print(l)
+    retriever = pimp.retriever.Retriever(cfg['start_path'], cfg['extensions'])
+    if args.use_fresh_retriver:
+        retriever.setCacheEnabled(False)
+
+    file_list = retriever.retrieveFileList(force_cahce = args.use_cache_retriver)
+
     # TODO debug version, optimize it!
-    for f in l:
+    for f in file_list:
         print "---> Init"
         print f
         # initialize parser
         main_parser = pimp.parser.Parser(f)
-        for f2 in l:
+        for f2 in file_list:
             if f == f2:
                 continue
             # compare file name: https://en.wikipedia.org/wiki/Levenshtein_distance
@@ -84,16 +72,6 @@ def main(args=sys.argv[1:]):
                 print second_parser._file_data
                 print "!!!"
         print "End  <---"
-
-    if args.square:
-        print(args.square ** 2)
-    else:
-        with indent(4):
-            puts(colored.blue("Arguments"))
-            puts(colored.green("int value: ") + str(args.int_value))
-            puts(colored.green("float value: ") + str(args.float_value))
-            puts(colored.green("flag: ") + str(args.flag))
-            puts(colored.green("rating: ") + str(args.rating))
 
 
 if __name__ == '__main__':
