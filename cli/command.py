@@ -38,14 +38,17 @@ def main(args=sys.argv[1:]):
         except yaml.YAMLError as exc:
             print(exc)
 
+    storage = pimp.storage.Storage()
+
     retriever = pimp.retriever.Retriever(cfg['start_path'], cfg['extensions'])
     if args.use_fresh_retriver:
         retriever.setCacheEnabled(False)
 
-    file_list = retriever.retrieveFileList(force_cahce = args.use_cache_retriver)
+    file_list = retriever.retrieveFileList(force_cache = args.use_cache_retriver)
 
     # TODO debug version, optimize it!
     for f in file_list:
+        main_id = None
         print "---> Init"
         print f
         # initialize parser
@@ -69,7 +72,10 @@ def main(args=sys.argv[1:]):
                 # TODO rewrite it or in this way it check the files twice
                 print "Match!!!"
                 print main_parser._file_data
+                if main_id is None:
+                    main_id = storage.storeMovieMetadata('NULL', f, main_parser._file_data)
                 print second_parser._file_data
+                storage.storeMovieMetadata(main_id, f2, second_parser._file_data)
                 print "!!!"
         print "End  <---"
 

@@ -11,7 +11,7 @@ class Retriever:
         self._start_path = file_path
         self._ext = ext
 
-    def retrieveFileList(self, force_cahce = False):
+    def retrieveFileList(self, force_cache = False):
         list = [];
 
         for path,dirs,files in os.walk( self._start_path ):
