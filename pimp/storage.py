@@ -2,6 +2,7 @@
 
 import sqlite3
 import hashlib
+import os
 
 class Storage:
     _cache_path = './var/cache'
@@ -9,6 +10,13 @@ class Storage:
     _cursor = None
 
     def __init__(self):
+        if not os.path.exists(self._cache_path):
+            os.makedirs(self._cache_path)
+
+        # TODO manage directory not accessible
+        # if not os.access(self._cache_path, os.W_OK):
+        #     os.makedirs(self._cache_path)
+
         self._conn = sqlite3.connect('%s/example.db' % self._cache_path)
         self._cursor = self._conn.cursor()
         self.initializeTables()
@@ -20,7 +28,9 @@ class Storage:
 
         # Insert a row of data
         try:
-            self._cursor.execute("INSERT INTO movie_metadata VALUES ('%s','%s','%s','%s','%s','%s','%d','%d','%d','%d')".format(id, main_id, filename, meta['compression'], meta.get('bits_per_sample', 0), meta['bits_per_pixel'], meta['height'], meta['width'], meta['bit_rate'], meta['sample_rate'] ))
+            self._cursor.execute(
+                "INSERT INTO movie_metadata VALUES ('%s','%s','%s','%s','%s','%s','%d','%d','%d','%d')".format(id, main_id, filename, meta['compression'], meta.get('bits_per_sample', 0), meta['bits_per_pixel'], meta['height'], meta['width'], meta['bit_rate'], meta['sample_rate'])
+            )
         except sqlite3.IntegrityError as exc:
             return id
 

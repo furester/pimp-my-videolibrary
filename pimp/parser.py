@@ -2,6 +2,7 @@ from collections import defaultdict
 import numpy as np
 from hachoir_parser import createParser
 from hachoir_metadata import extractMetadata
+from os.path import basename
 from hachoir_metadata.metadata_item import (QUALITY_BEST)
 from sys import argv, stderr, exit
 
@@ -45,11 +46,17 @@ class Parser:
         # print(self._file_data)
 
     def match(self, parser):
-        _data_compare = ["width", "nb_channel"]
+        ret = True
+        _data_compare = ["height", "nb_channel", "language"]
         for k in _data_compare:
-            if self._file_data[k] == parser._file_data[k]:
-                return True
-        return False
+            self_value = parser_value = None
+            if k in self._file_data:
+                self_value = self._file_data[k]
+            if k in parser._file_data:
+                parser_value = parser._file_data[k]
+            if self_value != parser_value:
+                ret = False
+        return ret
 
     def getInfo(self):
         return self._file_data
@@ -57,6 +64,8 @@ class Parser:
     def levenshtein(self, target, source=None):
         if source is None:
             source = self._file_path
+        source = basename(source)
+        target = basename(target)
         if len(source) < len(target):
             return self.levenshtein(source, target)
         # So now we have len(source) >= len(target).
@@ -85,3 +94,15 @@ class Parser:
                 current_row[0:-1] + 1)
             previous_row = current_row
         return previous_row[-1]
+
+    def normalized_levenshtein(self, target, source=None):
+        if source is None:
+            source = self._file_path
+        source = basename(source)
+        target = basename(target)
+        m_len = max(len(source), len(target))
+        if m_len == 0:
+            return 0
+        lev = self.levenshtein(target, source)
+        ret = float(lev) / m_len
+        return round((1 - ret) * 100)

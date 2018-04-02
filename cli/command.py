@@ -49,19 +49,24 @@ def main(args=sys.argv[1:]):
     # TODO debug version, optimize it!
     for f in file_list:
         main_id = None
+        start_check = False
         print "---> Init"
         print f
         # initialize parser
         main_parser = pimp.parser.Parser(f)
         for f2 in file_list:
             if f == f2:
+                start_check = True
+                continue
+            # ordered list: only after found same string start to analize
+            if not start_check:
                 continue
             # compare file name: https://en.wikipedia.org/wiki/Levenshtein_distance
-            _x = main_parser.levenshtein(f2)
-            # if similar
-            if _x > 15:
+            _x = main_parser.normalized_levenshtein(f2)
+            # if similar at cfg['lev_threshold']%
+            if _x < float(cfg['lev_threshold']):
                 continue
-            print(f, f2, _x)
+            print "Matching file: ", f, f2, _x
             # extract metadata
             main_parser.extractInfo()
             # initialize second parser
@@ -70,11 +75,11 @@ def main(args=sys.argv[1:]):
             # match
             if main_parser.match(second_parser):
                 # TODO rewrite it or in this way it check the files twice
-                print "Match!!!"
-                print main_parser._file_data
+                print "Match!!! ", f2
+                print "M ", main_parser._file_data
+                print "S ", second_parser._file_data
                 if main_id is None:
                     main_id = storage.storeMovieMetadata('NULL', f, main_parser._file_data)
-                print second_parser._file_data
                 storage.storeMovieMetadata(main_id, f2, second_parser._file_data)
                 print "!!!"
         print "End  <---"

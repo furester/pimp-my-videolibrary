@@ -3,3 +3,4 @@ start_path: /tmp/
 extensions:
   - .pdf
   - .txt
+lev_threshold: 75
