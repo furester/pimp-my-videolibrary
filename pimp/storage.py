@@ -45,18 +45,27 @@ class Storage:
         self._conn.commit()
         return id
 
-    def retrieveMetadata(self, filename):
-        m = hashlib.md5()
-        m.update(filename)
-        id = m.hexdigest()
-
-        try:
-            r = self._cursor.execute("SELECT * FROM movie_metadata WHERE id = '{}'".format(id))
+    def retrieveAllFileName(self):
+        try :
+            self._cursor.execute("SELECT filename FROM movie_metadata")
         except sqlite3.IntegrityError as exc:
             print(exc)
             return null
 
-        return r
+        return self._cursor.fetchall()
+
+    def retrieveMovieMetadata(self, filename):
+        m = hashlib.md5()
+        m.update(filename)
+        id = (m.hexdigest(),)
+
+        try:
+            self._cursor.execute("SELECT * FROM movie_metadata WHERE id = ?", id)
+        except sqlite3.IntegrityError as exc:
+            print(exc)
+            return null
+
+        return self._cursor.fetchone()
 
     def initializeTables(self):
         movie_metadata = '''CREATE TABLE IF NOT EXISTS movie_metadata

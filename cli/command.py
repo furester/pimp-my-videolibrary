@@ -47,28 +47,9 @@ def main(args=sys.argv[1:]):
     file_list = retriever.retrieveFileList(force_cache = args.use_cache_retriver)
 
     for f in file_list:
-        try:
-            # initialize parser
-            main_parser = pimp.parser.Parser(f)
-        except TypeError as exc:
-            print("TypeError: {} for {}".format(exc, f))
-            continue
-        except Exception as err:
-            print("Generic Exception: {} for {}".format(exc, f))
-            continue
-
-        try:
-            # extract metadata
-            main_parser.extractInfo()
-        except TypeError as exc:
-            print("TypeError on extract: {} for {}".format(exc, f))
-            continue
-
-        storage.storeMovieMetadata(f, main_parser._file_data)
-
-    for f in file_list:
-        a = storage.retrieveMetadata(f)
-        print(a)
+        a = storage.retrieveMovieMetadata(f)
+        if a is not None:
+            print(a)
 
     # TODO debug version, optimize it!
     for f in file_list:
