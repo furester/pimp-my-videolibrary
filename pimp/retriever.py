@@ -16,6 +16,13 @@ class Retriever:
 
     def retrieveFileList(self, force_cache = False):
         list = [];
+        if force_cache == True:
+            print("Retrieving from cache only")
+            all = self._storage.retrieveAllFileName()
+            for a in all:
+                list.append( a[0] )
+
+            return list
 
         for path,dirs,files in os.walk( self._start_path ):
             for filename in files:
@@ -32,7 +39,7 @@ class Retriever:
     def writeCache(self, f):
         if self._storage is None:
             return f
-        
+
         try:
             # initialize parser
             main_parser = parser.Parser(f)
