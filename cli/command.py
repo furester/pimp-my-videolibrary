@@ -40,15 +40,38 @@ def main(args=sys.argv[1:]):
 
     storage = pimp.storage.Storage()
 
-    retriever = pimp.retriever.Retriever(cfg['start_path'], cfg['extensions'])
+    retriever = pimp.retriever.Retriever(cfg['start_path'], cfg['extensions'], storage)
     if args.use_fresh_retriver:
         retriever.setCacheEnabled(False)
 
     file_list = retriever.retrieveFileList(force_cache = args.use_cache_retriver)
 
+    for f in file_list:
+        try:
+            # initialize parser
+            main_parser = pimp.parser.Parser(f)
+        except TypeError as exc:
+            print("TypeError: {} for {}".format(exc, f))
+            continue
+        except Exception as err:
+            print("Generic Exception: {} for {}".format(exc, f))
+            continue
+
+        try:
+            # extract metadata
+            main_parser.extractInfo()
+        except TypeError as exc:
+            print("TypeError on extract: {} for {}".format(exc, f))
+            continue
+
+        storage.storeMovieMetadata(f, main_parser._file_data)
+
+    for f in file_list:
+        a = storage.retrieveMetadata(f)
+        print(a)
+
     # TODO debug version, optimize it!
     for f in file_list:
-        main_id = None
         start_check = False
         print "---> Init"
         print f
@@ -78,9 +101,6 @@ def main(args=sys.argv[1:]):
                 print "Match!!! ", f2
                 print "M ", main_parser._file_data
                 print "S ", second_parser._file_data
-                if main_id is None:
-                    main_id = storage.storeMovieMetadata('NULL', f, main_parser._file_data)
-                storage.storeMovieMetadata(main_id, f2, second_parser._file_data)
                 print "!!!"
         print "End  <---"
 

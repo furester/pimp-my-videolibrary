@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
 
 import os, glob
+import parser
 
 class Retriever:
     _start_path = None
     _ext = []
     _cache_enabled = True
+    _storage = None
 
-    def __init__(self, file_path, ext):
+    def __init__(self, file_path, ext, storage):
         self._start_path = file_path
         self._ext = ext
+        self._storage = storage
 
     def retrieveFileList(self, force_cache = False):
         list = [];
@@ -24,8 +27,8 @@ class Retriever:
     def cacheEnabled(self, flag):
         self._cache_enabled = flag
 
-    def writeCache(self, file_list):
-        return
+    def writeCache(self, f):
+        return f
 
     def readCache(self, file_path, ext):
         return None
