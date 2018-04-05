@@ -3,6 +3,7 @@
 import os, glob
 import parser
 
+
 class Retriever:
     _start_path = None
     _ext = []
@@ -14,24 +15,24 @@ class Retriever:
         self._ext = ext
         self._storage = storage
 
-    def retrieveFileList(self, force_cache = False):
-        list = [];
-        if force_cache == True:
+    def retrieveFileList(self, force_cache=False):
+        list_file = []
+        if force_cache:
             print("Retrieving from cache only")
-            all = self._storage.retrieveAllFileName()
-            for a in all:
-                list.append( a[0] )
+            all_file = self._storage.retrieveAllFileName()
+            for a in all_file:
+                list_file.append(a[0])
 
-            return list
+            return list_file
 
-        for path,dirs,files in os.walk( self._start_path ):
+        for path, dirs, files in os.walk(self._start_path):
             for filename in files:
-                if filename.endswith( tuple(self._ext) ):
-                    f = self.writeCache( os.path.join(path,filename) )
+                if filename.endswith(tuple(self._ext)):
+                    f = self.writeCache(os.path.join(path, filename))
                     if f is not None:
-                        list.append( f )
+                        list_file.append(f)
 
-        return list
+        return list_file
 
     def cacheEnabled(self, flag):
         self._cache_enabled = flag
@@ -44,20 +45,20 @@ class Retriever:
             # initialize parser
             main_parser = parser.Parser(f)
         except TypeError as exc:
-            print("TypeError: {} for {}".format( exc, f ))
+            print("TypeError: {} for {}".format(exc, f))
             return None
         except Exception as err:
-            print("Generic Exception: {} for {}".format( err, f ))
+            print("Generic Exception: {} for {}".format(err, f))
             return None
 
         try:
             # extract metadata
             main_parser.extractInfo()
         except TypeError as exc:
-            print("TypeError on extract: {} for {}".format( exc, f ))
+            print("TypeError on extract: {} for {}".format(exc, f))
             return None
 
-        self._storage.storeMovieMetadata( f, main_parser._file_data )
+        self._storage.storeMovieMetadata(f, main_parser.getInfo())
         return f
 
     def readCache(self, file_path, ext):

@@ -32,6 +32,7 @@ def main(args=sys.argv[1:]):
         print("configuration file needed, creating one from template")
         shutil.copyfile("config.yml.template", ".config.yml")
 
+    cfg = {}
     with open(".config.yml", 'r') as ymlfile:
         try:
             cfg = yaml.load(ymlfile)
@@ -39,30 +40,35 @@ def main(args=sys.argv[1:]):
             print(exc)
 
     storage = pimp.storage.Storage()
+    ut = pimp.utility.Utility(True)
 
     retriever = pimp.retriever.Retriever(cfg['start_path'], cfg['extensions'], storage)
     if args.use_fresh_retriver:
-        retriever.setCacheEnabled(False)
+        retriever.cacheEnabled(False)
 
-    file_list = retriever.retrieveFileList(force_cache = args.use_cache_retriver)
+    file_list = retriever.retrieveFileList(args.use_cache_retriver)
 
     for f in file_list:
         a = storage.retrieveMovieMetadata(f)
         if a is not None:
-            print(a)
+            ut.log(a)
 
     # TODO debug version, optimize it!
+    f_name_match = f_to_move = set()
     for f in file_list:
         start_check = False
-        print "---> Init"
-        print f
+        ut.log("---> Init")
+        ut.log(f)
+        if f in f_name_match:
+            ut.log("### SKIP")
+            continue
         # initialize parser
         main_parser = pimp.parser.Parser(f)
         for f2 in file_list:
             if f == f2:
                 start_check = True
                 continue
-            # ordered list: only after found same string start to analize
+            # ordered list: only after found same string start to analyze
             if not start_check:
                 continue
             # compare file name: https://en.wikipedia.org/wiki/Levenshtein_distance
@@ -70,20 +76,22 @@ def main(args=sys.argv[1:]):
             # if similar at cfg['lev_threshold']%
             if _x < float(cfg['lev_threshold']):
                 continue
-            print "Matching file: ", f, f2, _x
+
+            f_name_match.add(f2)
+            ut.log("Matching file: ", f, f2, _x)
             # extract metadata
             main_parser.extractInfo()
             # initialize second parser
             second_parser = pimp.parser.Parser(f2)
             second_parser.extractInfo()
-            # match
-            if main_parser.match(second_parser):
-                # TODO rewrite it or in this way it check the files twice
-                print "Match!!! ", f2
-                print "M ", main_parser._file_data
-                print "S ", second_parser._file_data
-                print "!!!"
-        print "End  <---"
+            # compare
+            if main_parser.compare(second_parser) > 0:
+                f_to_move.add(f2)
+                ut.log("Move!!! ", f2)
+                ut.log("M ", main_parser.getInfo())
+                ut.log("S ", second_parser.getInfo())
+                ut.log("!!!")
+        ut.log("End  <---")
 
 
 if __name__ == '__main__':

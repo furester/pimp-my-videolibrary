@@ -11,6 +11,7 @@ class Parser:
     _file_path = None
     _file_data = {}
     _parser = None
+    _data_compare = ["height", "nb_channel", "language"]
 
     def __init__(self, file_path):
         self._file_path = file_path
@@ -47,19 +48,45 @@ class Parser:
 
     def match(self, parser):
         ret = True
-        _data_compare = ["height", "nb_channel", "language"]
-        for k in _data_compare:
-            self_value = parser_value = None
-            if k in self._file_data:
-                self_value = self._file_data[k]
-            if k in parser._file_data:
-                parser_value = parser._file_data[k]
-            if self_value != parser_value:
+        for k in self._data_compare:
+            if self.getInfo(k) != parser.getInfo(k):
                 ret = False
+                break
         return ret
 
-    def getInfo(self):
-        return self._file_data
+    '''
+    Compare two parsed file
+    :param parser:
+    :return: -1 current version is different and lower
+              0 same version or not know
+             +1 current version is different and better
+    '''
+
+    def compare(self, parser):
+        ret = 0
+        if self.match(parser):
+            return ret
+        _self_value = self.getInfo("height")
+        _parser_value = parser.getInfo("height")
+        if _self_value == _parser_value:
+            ret = 0
+        elif _self_value > _parser_value:
+            ret = 1
+        else:
+            ret = -1
+        for k in ["nb_channel", "language"]:
+            if self.getInfo(k) != parser.getInfo(k):
+                ret = 0
+                break
+        return ret
+
+    def getInfo(self, key=None):
+        if not key:
+            return self._file_data
+        elif key in self._file_data:
+            return self._file_data[key]
+        else:
+            return None
 
     def levenshtein(self, target, source=None):
         if source is None:

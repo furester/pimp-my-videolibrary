@@ -4,6 +4,7 @@ import sqlite3
 import hashlib
 import os
 
+
 class Storage:
     _cache_path = './var/cache'
     _conn = None
@@ -28,16 +29,18 @@ class Storage:
 
         # Insert a row of data
         try:
-            self._cursor.execute('INSERT INTO movie_metadata VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)', (id,
-                    unicode(filename, "utf-8"),
-                    unicode(meta.get('compression', ""), "utf-8"),
-                    meta.get('bits_per_sample', 0),
-                    meta.get('bits_per_pixel', 0),
-                    meta.get('height', 0),
-                    meta.get('width', 0),
-                    meta.get('bit_rate', 0),
-                    meta.get('sample_rate', 0)
-            ))
+            self._cursor.execute(
+                'INSERT INTO movie_metadata VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)',
+                (id,
+                 unicode(filename, "utf-8"),
+                 unicode(meta.get('compression', ""), "utf-8"),
+                 meta.get('bits_per_sample', 0),
+                 meta.get('bits_per_pixel', 0),
+                 meta.get('height', 0),
+                 meta.get('width', 0),
+                 meta.get('bit_rate', 0),
+                 meta.get('sample_rate', 0)
+                 ))
         except sqlite3.IntegrityError as exc:
             return id
 
@@ -46,25 +49,23 @@ class Storage:
         return id
 
     def retrieveAllFileName(self):
-        try :
+        try:
             self._cursor.execute("SELECT filename FROM movie_metadata")
         except sqlite3.IntegrityError as exc:
             print(exc)
-            return null
+            return None
 
         return self._cursor.fetchall()
 
     def retrieveMovieMetadata(self, filename):
-        m = hashlib.md5()
-        m.update(filename)
-        id = (m.hexdigest(),)
-
         try:
+            m = hashlib.md5()
+            m.update(filename.encode('utf-8'))
+            id = (m.hexdigest(),)
             self._cursor.execute("SELECT * FROM movie_metadata WHERE id = ?", id)
         except sqlite3.IntegrityError as exc:
             print(exc)
-            return null
-
+            return None
         return self._cursor.fetchone()
 
     def initializeTables(self):
