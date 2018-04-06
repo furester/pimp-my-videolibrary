@@ -120,8 +120,8 @@ def main(args=sys.argv[1:]):
                 second_parser.extractInfo()
             # compare
             if main_parser.compare(second_parser) > -1:
-                fb = os.path.basename(f)
-                f2b = os.path.basename(f2)
+                fb = f #os.path.basename(f)
+                f2b = f2 #os.path.basename(f2)
                 if fb in f_to_move:
                     f_to_move[fb].append(f2b)
                 else:
