@@ -39,13 +39,13 @@ class Storage:
                  meta.get('height', 0),
                  meta.get('width', 0),
                  meta.get('bit_rate', 0),
-                 meta.get('sample_rate', 0)
+                 meta.get('sample_rate', 0),
+                 meta.get('language', ""),
+                 meta.get('nb_channel', 0)
                  ))
         except sqlite3.IntegrityError as exc:
             return id
-        #,
-        #meta.get('language', ""),
-        #meta.get('nb_channel', 0)
+
 
         # Save (commit) the changes
         self._conn.commit()
@@ -70,9 +70,7 @@ class Storage:
             print(exc)
             return None
         _data = self._cursor.fetchone()
-        #,
-        #"language": _data[9],
-        #"nb_channel": _data[10]
+
         return {
             "id": _data[0].encode("utf8"),
             "filename": _data[1].encode("utf8"),
@@ -82,7 +80,9 @@ class Storage:
             "height": _data[5],
             "width": _data[6],
             "bit_rate": _data[7],
-            "sample_rate": _data[8]
+            "sample_rate": _data[8],
+            "language": _data[9],
+            "nb_channel": _data[10]
         }
 
     def initializeTables(self):
