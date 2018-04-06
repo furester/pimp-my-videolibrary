@@ -1,10 +1,10 @@
 from collections import defaultdict
 import numpy as np
+import re
 from hachoir_parser import createParser
 from hachoir_metadata import extractMetadata
 from os.path import basename
-from hachoir_metadata.metadata_item import (QUALITY_BEST)
-from sys import argv, stderr, exit
+from sys import stderr
 
 
 class Parser:
@@ -13,14 +13,24 @@ class Parser:
     _parser = None
     _data_compare = ["height", "nb_channel", "language"]
 
-    def __init__(self, file_path):
+    def __init__(self, file_path, data=None):
+        self._file_data = {}
         self._file_path = file_path
-        self._parser = createParser(unicode(self._file_path, "utf-8"), self._file_path)
-        if not self._parser:
-            stderr("Unable to parse file: " + self._file_path)
+        if data is not None:
+            self.populate(data)
+        else:
+            self._parser = createParser(unicode(self._file_path, "utf-8"), self._file_path)
+            if not self._parser:
+                stderr("Unable to parse file: " + self._file_path)
+
+    def populate(self, data):
+        for key, value in data.iteritems():
+            self._file_data[key] = value
 
     def extractInfo(self):
         # with parser:
+        if self._parser is None:
+            return
         try:
             metadata = extractMetadata(self._parser)
         except Exception as err:
@@ -88,13 +98,26 @@ class Parser:
         else:
             return None
 
-    def levenshtein(self, target, source=None):
+    def levenshtein(self, target, source=None, clean=True):
         if source is None:
             source = self._file_path
+        # remove extension
         source = basename(source)
         target = basename(target)
         if len(source) < len(target):
-            return self.levenshtein(source, target)
+            return self.levenshtein(source, target, clean)
+        if clean:
+            # remove extension
+            source = basename(source[:-4])
+            target = basename(target[:-4])
+            # remove all after year
+            p = re.compile(".[19|20]\d{2}.")
+            for m in p.finditer(source):
+                source = source[:m.start()]
+                break
+            for m in p.finditer(target):
+                target = target[:m.start()]
+                break
         # So now we have len(source) >= len(target).
         if len(target) == 0:
             return len(source)

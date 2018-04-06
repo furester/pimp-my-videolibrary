@@ -43,6 +43,9 @@ class Storage:
                  ))
         except sqlite3.IntegrityError as exc:
             return id
+        #,
+        #meta.get('language', ""),
+        #meta.get('nb_channel', 0)
 
         # Save (commit) the changes
         self._conn.commit()
@@ -66,7 +69,21 @@ class Storage:
         except sqlite3.IntegrityError as exc:
             print(exc)
             return None
-        return self._cursor.fetchone()
+        _data = self._cursor.fetchone()
+        #,
+        #"language": _data[9],
+        #"nb_channel": _data[10]
+        return {
+            "id": _data[0].encode("utf8"),
+            "filename": _data[1].encode("utf8"),
+            "compression": _data[2],
+            "bits_per_sample": _data[3],
+            "bits_per_pixel": _data[4],
+            "height": _data[5],
+            "width": _data[6],
+            "bit_rate": _data[7],
+            "sample_rate": _data[8]
+        }
 
     def initializeTables(self):
         movie_metadata = '''CREATE TABLE IF NOT EXISTS movie_metadata
