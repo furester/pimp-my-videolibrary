@@ -59,7 +59,7 @@ def main(args=sys.argv[1:]):
     for f in file_list:
         start_check = False
         _count += 1
-        ut.out("---> Init {}/{} {}% {}"
+        ut.out("---> Init {:4d}/{:4d} {:3.2f}% {}"
                .format(_count, _len, round((float(_count) / _len) * 100, 2),
                        str(datetime.timedelta(seconds=(time.time() - start_time)))))
         ut.log(f)
@@ -127,7 +127,15 @@ def main(args=sys.argv[1:]):
                 ut.log("S {}".format(second_parser.getInfo()))
                 ut.log("!!!")
         ut.log("End  <---")
-    ut.out(f_to_move)
+
+    print("FILE(s) TO MOVE")
+    print("===============")
+
+    for key in f_to_move.keys():
+        ut.out("{}".format(key.replace(cfg['start_path'], '')))
+        for to_move in f_to_move[key]:
+            ut.out(" {}".format(to_move.replace(cfg['start_path'], '')))
+        ut.out(".")
 
 
 if __name__ == '__main__':
