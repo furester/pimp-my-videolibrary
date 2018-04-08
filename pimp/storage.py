@@ -24,13 +24,13 @@ class Storage:
 
     def storeMovieMetadata(self, filename, meta):
         m = hashlib.md5()
-        m.update(filename)
+        m.update(filename.encode('utf-8'))
         id = m.hexdigest()
 
         # Insert a row of data
         try:
             self._cursor.execute(
-                'INSERT INTO movie_metadata VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)',
+                'INSERT INTO movie_metadata VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)',
                 (id,
                  unicode(filename, "utf-8"),
                  unicode(meta.get('compression', ""), "utf-8"),
@@ -66,7 +66,8 @@ class Storage:
             m.update(filename.encode('utf-8'))
             id = (m.hexdigest(),)
             self._cursor.execute("SELECT * FROM movie_metadata WHERE id = ?", id)
-        except sqlite3.IntegrityError as exc:
+        except UnicodeDecodeError as exc:
+            print(filename)
             print(exc)
             return None
         _data = self._cursor.fetchone()
@@ -89,7 +90,8 @@ class Storage:
         movie_metadata = '''CREATE TABLE IF NOT EXISTS movie_metadata
                 (id text PRIMARY KEY, filename text, compression text,
                 bits_per_sample text, bits_per_pixel text, height int, width int,
-                bit_rate int, sample_rate int, creation_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
+                bit_rate int, sample_rate int, language string, nb_channel int,
+                creation_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
         '''
         tables = [movie_metadata]
 
