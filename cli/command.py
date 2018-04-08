@@ -128,8 +128,8 @@ def main(args=sys.argv[1:]):
                 ut.log("!!!")
         ut.log("End  <---")
 
-    print("FILE(s) TO MOVE")
-    print("===============")
+    ut.out("FILE(s) TO MOVE")
+    ut.out("===============")
 
     for key in f_to_move.keys():
         ut.out("{}".format(key.replace(cfg['start_path'], '')))
