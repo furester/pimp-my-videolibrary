@@ -50,11 +50,6 @@ def main(args=sys.argv[1:]):
 
     file_list = retriever.retrieveFileList(args.use_cache_retriver)
 
-    for f in file_list:
-        a = storage.retrieveMovieMetadata(f)
-        if a is not None:
-            ut.log(a)
-
     # TODO debug version, optimize it!
     start_time = time.time()
     _count = 0
@@ -76,7 +71,8 @@ def main(args=sys.argv[1:]):
         if _md is not None:
             main_parser = pimp.parser.Parser(f, _md)
         else:
-            main_parser = pimp.parser.Parser(f)
+            ut.log("### ERROR")
+            continue
         for f2 in file_list:
             if f == f2:
                 start_check = True
@@ -126,7 +122,7 @@ def main(args=sys.argv[1:]):
                     f_to_move[fb].append(f2b)
                 else:
                     f_to_move[fb] = [f2b]
-                ut.log("Move!!! {}".format(f2.encode("utf-8")))
+                ut.log("Move!!! {}".format(f2))
                 ut.log("M {}".format(main_parser.getInfo()))
                 ut.log("S {}".format(second_parser.getInfo()))
                 ut.log("!!!")

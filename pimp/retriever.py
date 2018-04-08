@@ -20,10 +20,7 @@ class Retriever:
         if force_cache:
             print("Retrieving from cache only")
             all_file = self._storage.retrieveAllFileName()
-            for a in all_file:
-                list_file.append(a[0])
-
-            return list_file
+            return all_file
 
         for path, dirs, files in os.walk(self._start_path):
             for filename in files:

@@ -24,7 +24,8 @@ class Storage:
 
     def storeMovieMetadata(self, filename, meta):
         m = hashlib.md5()
-        m.update(filename.encode('utf-8'))
+#        m.update(filename.encode('utf-8'))
+        m.update(filename)
         id = m.hexdigest()
 
         # Insert a row of data
@@ -58,19 +59,29 @@ class Storage:
             print(exc)
             return None
 
-        return self._cursor.fetchall()
+        query_result = self._cursor.fetchall()
+
+        list_file = []
+        for (data,) in query_result:
+            list_file.append(data.encode("utf8"))
+
+        return list_file
 
     def retrieveMovieMetadata(self, filename):
+        m = hashlib.md5()
+#        m.update(filename.encode('utf-8'))
+        m.update(filename)
+        id = (m.hexdigest(),)
+
         try:
-            m = hashlib.md5()
-            m.update(filename.encode('utf-8'))
-            id = (m.hexdigest(),)
             self._cursor.execute("SELECT * FROM movie_metadata WHERE id = ?", id)
-        except UnicodeDecodeError as exc:
-            print(filename)
+        except sqlite3.IntegrityError as exc:
             print(exc)
             return None
         _data = self._cursor.fetchone()
+
+        if _data == None:
+            return None
 
         return {
             "id": _data[0].encode("utf8"),
