@@ -34,12 +34,12 @@ def main(args=sys.argv[1:]):
 
     args = parser.parse_args(args)
 
-    if not os.path.isfile(".config.yml"):
+    if not os.path.isfile("./config/folder.yml"):
         print("configuration file needed, creating one from template")
-        shutil.copyfile("config.yml.template", ".config.yml")
+        shutil.copyfile("./config/folder.yml.template", "./config/folder.yml")
 
     cfg = {}
-    with open(".config.yml", 'r') as ymlfile:
+    with open("./config/folder.yml", 'r') as ymlfile:
         try:
             cfg = yaml.load(ymlfile, Loader=Loader)
         except yaml.YAMLError as exc:
