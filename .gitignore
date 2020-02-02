@@ -1,4 +1,4 @@
-.config.yml
+config/folder.yml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

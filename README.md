@@ -38,6 +38,10 @@ and get the help with
       - .pdf
       - .txt
 
+### Docker
+
+    $ docker run -v config:/application/config pimp-my-videolibrary_python:latest
+
 ## Specification
 
 Matching files will be compared for
