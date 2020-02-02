@@ -4,6 +4,10 @@ import shutil
 import sys
 import argparse
 import yaml
+try:
+    from yaml import CLoader as Loader, CDumper as Dumper
+except ImportError:
+    from yaml import Loader, Dumper
 import os
 import time
 import datetime
@@ -37,7 +41,7 @@ def main(args=sys.argv[1:]):
     cfg = {}
     with open(".config.yml", 'r') as ymlfile:
         try:
-            cfg = yaml.load(ymlfile)
+            cfg = yaml.load(ymlfile, Loader=Loader)
         except yaml.YAMLError as exc:
             print(exc)
 
